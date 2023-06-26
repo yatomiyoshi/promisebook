@@ -38,3 +38,30 @@ const request = {
     return fetchURLCallback(peopleURL, jsonParse.bind(null, callback));
   },
 };
+
+const allRequest = (requests, callback, results) => {
+  if (requests.length === 0) {
+    return callback(null, results);
+  }
+  const req = requests.shift();
+  req((error, value) => {
+    if (error) {
+      callback(error, value);
+    } else {
+      results.push(value);
+      allRequest(requests, callback, results);
+    }
+  });
+};
+
+const main = (callback) => {
+  allRequest([request.comment, request.people], callback, []);
+};
+
+main((error, results) => {
+  if (error) {
+    console.error(error);
+    return;
+  }
+  console.log(results);
+});
